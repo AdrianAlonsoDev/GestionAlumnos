@@ -8,8 +8,10 @@ package gestionalumnos.interfaz;
 import gestionalumnos.GestionAlumnos;
 import gestionalumnos.GestionAsignaturas;
 import gestionalumnos.GestionNotas;
+import gestionalumnos.modelos.Notas;
 import java.awt.Component;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 
 /**
@@ -340,12 +342,17 @@ public class GUI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_formFocusGained
 
+    public static  GestionAsignaturas asignaturaAux = new GestionAsignaturas();
+    public static  GestionNotas notaAux = new GestionNotas();
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
 
             gestionAsignaturas.generarAsignaturas();
+            gestionNotas.generarNotas();
+            gestionAlumnos.generarAlumnos();
 
         //gestionNotas.generarNotas();
         //gestionAlumnos.generarAlumnos();

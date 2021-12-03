@@ -5,6 +5,9 @@
  */
 package gestionalumnos;
 
+import gestionalumnos.interfaz.GUI;
+import gestionalumnos.modelos.Asignatura;
+import gestionalumnos.modelos.Curso;
 import gestionalumnos.modelos.Notas;
 import java.io.EOFException;
 import java.io.File;
@@ -18,7 +21,6 @@ import java.io.StreamCorruptedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,14 +31,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author adria
  */
 public class GestionNotas {
-    
+
     public GestionNotas() {
     }
 
     //Arrays para almacenar en memoria las asignaturas y cursos
     //y mostrarlas en la interfaz, luego estas se almacenan en un fichero.
-    public static ArrayList<Notas> notas = new ArrayList<>();
-    private final GestionAsignaturas asignaturaAux = new GestionAsignaturas();
+    public static ArrayList<Notas> notasCargadas = new ArrayList<>();
 
     /* @generarAsignaturas
     * Plantilla de asignaturas y cursos.
@@ -44,149 +45,126 @@ public class GestionNotas {
     * programa o cuando el archivo Asignaturas.dat es eliminado.
      */
     public void generarNotas() {
-        //Comprobamos antes de generar alumnos quelas asignaturas exsisten.   
+        // Si el fichero no existe lo creamos   
         if (Files.exists(Path.of("Asignaturas.dat"))) {
-
-            // Comprobamos ahora el fichero Notas.dat, si el fichero no existe lo creamos   
             if (!Files.exists(Path.of("Notas.dat"))) {
                 File fichero = new File("Notas.dat");
 
-                //Limpiamos el ArrayList de notas por si acaso
-                limpiarArrays();
-                
+                System.out.println("(generarNotas) Notas.dat no existe");
+
                 try {
                     fichero.createNewFile();
+                    System.out.println("(generarNotas) Notas.dat creado");
+
                 } catch (IOException e) {
-                    System.out.println("IOException " + e);
+                    System.out.println("(generarNotas) Notas.dat falló al crearse" + " \nIOException " + e);
                 }
-                
-                
+
                 Random rd = new Random();
-                
-                int[] notasLista = new int[8]; 
-                
+
+                int[] notasLista = new int[8];
+
                 for (int i = 0; i < notasLista.length; i++) {
-                   notasLista[i] = rd.nextInt(11); 
+                    notasLista[i] = rd.nextInt(11);
                 }
-                
+
                 /*
                  * Populamos los ArrayLists
                  */
                 System.out.println("GRABO LOS DATOS DE LAS NOTAS.");
-                
-                for (int i = 0; i < asignaturaAux.asignaturas.size(); i++) {                                        
+
+                for (int i = 0; i < GUI.asignaturaAux.asignaturas.size(); i++) {
                     int convocatoriaRandom = ThreadLocalRandom.current().nextInt(2017, 2022);
-                    Notas nota = new Notas(asignaturaAux.asignaturas.get(i), notasLista, convocatoriaRandom);
-                    escribirNota(nota);
-                    notas.add(nota);
+                    Notas nota = new Notas(GUI.asignaturaAux.asignaturas.get(i), notasLista, convocatoriaRandom);
                 }
 
+                    escribirNota(notasCargadas);
                 //Si el fichero existe en un primer lugar, pasamos a leerlo.    
             } else {
-                System.out.println("El fichero ya Notas existe, cargándolo");
-                try {
-                    leerNotas();
-                } catch (IOException | ClassNotFoundException e) {
-                    System.out.println("Error en leerNotas() " + e);
-                }
-            }
+                System.out.println("(generarNotas) El fichero Notas ya existe, cargándolo");
+                leerNotas();
+            } 
         } else {
-            System.out.println("No se pueden generar las notas porque faltas las asignaturas, generandolas ahora mismo...");
-            asignaturaAux.generarAsignaturas();
+            System.out.println("El fichero Asignaturas no existe, generandolo");
+            GUI.asignaturaAux.generarAsignaturas();
         }
     }
-
-    /* @leerAsignaturas
+        /* @leerAsignaturas
     * Se Ejecuta cuando el fichero Asignaturas.dat
     * existe y limpia las arrays para rellenarlas con
     * los datos del archivo Asignaturas.
-     */
-    public void leerNotas() throws IOException, ClassNotFoundException {
+         */
+    public void leerNotas() {
         //Limpiamos los ArrayLists por si acaso
         limpiarArrays();
 
         //Si el fichero existe
         if (Files.exists(Path.of("Notas.dat"))) {
-            //Declaramos el fichero
-            File fichero = new File("Notas.dat");
 
             //Cargamos en memoria los datosdel fichero
-            ObjectInputStream dataIS;
-            dataIS = new ObjectInputStream(new FileInputStream(fichero));
+            System.out.println("(leerNotas) LEYENDO ARCHIVO DE NOTAS");
 
-            System.out.println("LEYENDO ARCHIVO DE NOTAS");
-
-            //Lectura del fichero
             try {
-                while (true) {
-                    // Creamos un objeto asignatura leyendo del fichero 
-                    Notas nota = (Notas) dataIS.readObject();
-                    System.out.printf("Nota de " + nota.getAsignatura() + ": " + Arrays.toString(nota.getNotas()));
-                    notas.add(nota);
-                }
-            } catch (EOFException eo) {
-                System.out.println("FIN DE LECTURA.");
-                System.out.println(notas.toString());
-            } catch (StreamCorruptedException x) {
-                System.out.println("Error en StreamCorruptedException" + x);
+                ObjectInputStream ois = new ObjectInputStream(
+                        new FileInputStream("Notas.dat"));
+
+                // Se lee el primer objeto
+                notasCargadas = (ArrayList) ois.readObject();
+
+                // Mientras haya objetos
+                ois.close();
+                // cerrar stream de entrada
+
+                System.out.println(notasCargadas.toString());
+                System.out.println("(leerAsignaturas) Fichero Notas.dat cerrado ");
+            } catch (EOFException e) {
+                System.out.println("(leerAsignaturas) FIN LECTURA ARCHIVO");
+            } catch (Exception e2) {
+                System.out.println("error:" + e2);
+                e2.printStackTrace();
             }
-            dataIS.close(); // cerrar stream de entrada
+
+            // cerrar stream de entrada
         } else {
-            System.out.println("El fichero Notas.dat no existe, creandolo desde la plantilla...");
+            System.out.println("(leerNotas) El fichero Notas.dat no existe, creandolo desde la plantilla...");
             generarNotas();
         }
     }
 
     public void añadirNotas(Notas nota) {
         //La añadimos en memoria (ArrayList)
-        notas.add(nota);
+        notasCargadas.add(nota);
         
         //Recreamos el fichero con la información en memoria
         if (Files.exists(Path.of("Notas.dat"))) {
-            File fichero = new File("Notas.dat");
-            fichero.delete();
-            try {
-                fichero.createNewFile();
-            } catch (IOException ex) {
-                Logger.getLogger(GestionAsignaturas.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            //Una vezcreado el fichero lo populamos con cada dato del array.
-            for (int i = 0; i < notas.size(); i++) {
-                escribirNota(notas.get(i));
-            }
+                escribirNota(notasCargadas);
+
+        } else {
+            System.out.println("(añadirNotas) No existe Notas.dat");
         }
     }
 
-    public void escribirNota(Notas nota) {
+    public void escribirNota(ArrayList lista) {
         if (Files.exists(Path.of("Notas.dat"))) {
+            //Declara el fichero
             try {
-                //Declara el fichero
-                File fichero = new File("Notas.dat");
-                FileOutputStream fileout = new FileOutputStream(fichero, true);
-                //Crea el flujo de salida
-                //Conecta el flujo de bytes al flujo de datos
-                ObjectOutputStream dataOS;
-                try {
-                    dataOS = new ObjectOutputStream(fileout);
-                    //Escribo la persona en el fichero
-                    dataOS.writeObject(nota); 
-                    dataOS.close();
-                } catch (IOException e) {
-                    System.out.println("IOException " + e);
-                }
-            } catch (FileNotFoundException e) {
-                System.out.println("FileNotFoundException " + e);
+                ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream("Notas.dat"));
+                objectOut.writeObject(lista);
+                System.out.println("(escribirNota) Escrito la lista de asignaturas: ");
+                objectOut.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
         } else {
-            System.out.println("No se puede escribir la nota porque no existe el fichero Notas.dat");
-            generarNotas();
+            System.out.println("escribirNota) No se puede escribir la asignatura porque no existe el fichero Asignaturas.dat");
         }
     }
 
     /* @limpiarArrays
-    * Vaciar los ArrayList de Asignaturas y Cursos
+     * Vaciar los ArrayList de Asignaturas y Cursos
      */
     public void limpiarArrays() {
-        notas.clear();
+        notasCargadas.clear();
     }
 }

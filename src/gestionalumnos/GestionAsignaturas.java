@@ -40,107 +40,92 @@ public class GestionAsignaturas {
     * Plantilla de asignaturas y cursos.
     * Se ejecuta cuando se abre por primera vez el
     * programa o cuando el archivo Asignaturas.dat es eliminado.
-    */
+     */
     public void generarAsignaturas() {
         // Si el fichero no existe lo creamos   
         if (!Files.exists(Path.of("Asignaturas.dat"))) {
             System.out.println("(generarAsignaturas) Asignaturas.dat no existe");
             File fichero = new File("Asignaturas.dat");
-        
+
             try {
                 fichero.createNewFile();
                 System.out.println("(generarAsignaturas) Asignaturas.dat creado");
-                
+
             } catch (IOException e) {
                 System.out.println("(generarAsignaturas) Asignaturas.dat falló al crearse" + " \nIOException " + e);
             }
-            
+
             //Arrays normales que almacenan la plantilla de datos.
             String nombres[] = {"Lengua", "Matemáticas", "Conocimiento", "Física y química",
                 "Educación Física", "Religion", "Inglés"};
-            
-            String cursosNombre[] = {"Primero", "Segundo", "Tercero", "Cuarto", "Primero Bachiller", "Segundo Bachiller" , "Apoyo"};
+
+            String cursosNombre[] = {"Primero", "Segundo", "Tercero", "Cuarto", "Primero Bachiller", "Segundo Bachiller", "Apoyo"};
 
             //Limpiamos los ArrayLists por si acaso
             limpiarArrays();
-           
+
             /*
             * Populamos los ArrayLists
-            */
+             */
             System.out.println("(generarAsignaturas) GRABO LOS DATOS DE LA ASIGNATURA Y CURSOS.");
-            
+
             //Rellenamos el ArrayList con cursos por defecto
             for (String cursosNombre1 : cursosNombre) {
                 Curso curso = new Curso(cursosNombre1);
                 cursos.add(curso);
             }
-                              
+
             //Rellenamos el ArrayList con asignaturas por defecto           
             for (int i = 0; i < nombres.length; i++) { //recorro los arrays
-                Asignatura asignatura = new Asignatura(nombres[i], cursos.get(i)); //creo la persona
-                //Escribo la asignatura en el fichero.
-                try {
-                 escribirAsignatura(asignatura);
-                } catch(IOException e) {
-                    System.out.println("(generarAsignaturas) Falló el escribirAsignatura()\n IOException " + e);
-                }
+                Asignatura asignatura = new Asignatura(nombres[i], cursos.get(i)); //creo la persona                
                 //Guardamos las asignatura en memoria
                 asignaturas.add(asignatura);
-            }            
-        //Si el fichero existe en un primer lugar, pasamos a leerlo.    
+            }
+
+            escribirAsignatura(asignaturas);
+            //Si el fichero existe en un primer lugar, pasamos a leerlo.    
         } else {
             System.out.println("(generarAsignaturas) El fichero Asignaturas ya existe, cargándolo");
-            try {
-                leerAsignaturas();
-            } catch (IOException | ClassNotFoundException e) {
-                System.out.println("\nError en leerAsignaturas() " + e);
-            }
+            leerAsignaturas();
         }
     }
 
-    
     /* @leerAsignaturas
     * Se Ejecuta cuando el fichero Asignaturas.dat
     * existe y limpia las arrays para rellenarlas con
     * los datos del archivo Asignaturas.
-    */
-    public void leerAsignaturas() throws IOException, ClassNotFoundException {
+     */
+    public void leerAsignaturas() {
         //Limpiamos los ArrayLists por si acaso
         limpiarArrays();
-        
+
         //Si el fichero existe
         if (Files.exists(Path.of("Asignaturas.dat"))) {
-            System.out.println("(leerAsignaturas) Fichero Asignaturas.dat existe");
-            
+
             //Cargamos en memoria los datosdel fichero
+            System.out.println("(leerAsignaturas) LEYENDO ARCHIVO DE ASIGNATURAS");
 
-            System.out.println("(leerAsignaturas) LEYENDO ARCHIVO DE ASIGNATURAS");           
-            
+            try {
+                ObjectInputStream ois = new ObjectInputStream(
+                        new FileInputStream("Asignaturas.dat"));
 
-            Asignatura asignatura; // defino la variable persona
-            ObjectInputStream dataIS = new ObjectInputStream(new FileInputStream("Asignaturas.dat"));
-                try {
-                    while (true) {
-                        // lectura del fichero
-                        // leer una Persona
-                        asignatura = (Asignatura) dataIS.readObject();
-                        asignaturas.add(asignatura);
-                        System.out.printf("Nombre: %s", asignatura.getNombre());
-                        
-                    }
-                }catch(EOFException e) {
-                    System.out.println("(leerAsignaturas) FIN LECTURA ARCHIVO");
-                } catch(StreamCorruptedException e) {
-                    
-                    System.out.println("(leerAsignaturas) StreamCorruptedException " + e);
-                    
-                }
-                
-                dataIS.close();
+                // Se lee el primer objeto
+                asignaturas = (ArrayList) ois.readObject();
+
+                // Mientras haya objetos
+                ois.close();
                 // cerrar stream de entrada
-            
-             // cerrar stream de entrada
-            System.out.println("(leerAsignaturas) Fichero Asignaturas.dat cerrado ");
+
+                System.out.println(asignaturas.toString());
+                System.out.println("(leerAsignaturas) Fichero Asignaturas.dat cerrado ");
+            } catch (EOFException e) {
+                System.out.println("(leerAsignaturas) FIN LECTURA ARCHIVO");
+            } catch (Exception e2) {
+                System.out.println("error:" + e2);
+                e2.printStackTrace();
+            }
+
+            // cerrar stream de entrada
         } else {
             System.out.println("(leerAsignaturas) El fichero Asignaturas.dat no existe, creandolo desde la plantilla...");
             generarAsignaturas();
@@ -150,45 +135,32 @@ public class GestionAsignaturas {
     public void añadirAsignatura(String nombre, Curso curso) {
         Asignatura asignatura = new Asignatura(nombre, curso);
         asignaturas.add(asignatura);
-        if (Files.exists(Path.of("Asignaturas.dat"))) {
-            File fichero = new File("Asignaturas.dat");
-            fichero.delete();
-            try {
-                fichero.createNewFile();
-            } catch (IOException ex) {
-                Logger.getLogger(GestionAsignaturas.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            for (int i = 0; i < asignaturas.size(); i++) {
-                try {
-                    escribirAsignatura(asignaturas.get(i));
-                } catch(IOException e) {
-                    System.out.println("(añadirAsignatura) IOException " + e );
-                }
-            }
-        }
+        escribirAsignatura(asignaturas);
+        
     }
 
-    public void escribirAsignatura(Asignatura asignatura) throws IOException {
+    public void escribirAsignatura(ArrayList lista) {
         if (Files.exists(Path.of("Asignaturas.dat"))) {
-                //Declara el fichero
-                File fichero = new File("Asignaturas.dat"); 
-                FileOutputStream fileOut = new FileOutputStream(fichero, true);
-                ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-                objectOut.writeObject(asignatura);
-                System.out.println("(escribirAsignatura) Escrito la asignatura: " + asignatura.getNombre());
+            //Declara el fichero
+            try {
+                ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream("Asignaturas.dat"));
+                objectOut.writeObject(lista);
+                System.out.println("(escribirAsignatura) Escrito la lista de asignaturas: ");
                 objectOut.close();
-                fileOut.close();
-                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         } else {
             System.out.println("escribirAsignatura) No se puede escribir la asignatura porque no existe el fichero Asignaturas.dat");
         }
     }
-    
+
     /* @limpiarArrays
      * Vaciar los ArrayList de Asignaturas y Cursos
      */
     public void limpiarArrays() {
         asignaturas.clear();
-        cursos.clear();       
+        cursos.clear();
     }
 }

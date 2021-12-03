@@ -5,6 +5,7 @@
  */
 package gestionalumnos;
 
+import gestionalumnos.interfaz.GUI;
 import gestionalumnos.interfaz.Utils;
 import gestionalumnos.modelos.Alumno;
 import gestionalumnos.modelos.Asignatura;
@@ -38,8 +39,6 @@ public class GestionAlumnos {
     //Arrays para almacenar en memoria las asignaturas y cursos
     //y mostrarlas en la interfaz, luego estas se almacenan en un fichero.
     public static ArrayList<Alumno> alumnos = new ArrayList<>();
-    private final GestionAsignaturas asignaturaAux = new GestionAsignaturas();
-    private final GestionNotas notaAux = new GestionNotas();
 
 
     /* @generarAsignaturas
@@ -70,7 +69,7 @@ public class GestionAlumnos {
                     "Cortés Perez", "Alonso Pueblo", "Perez Gomez", "Martinez Garcia", "Guerrero López"};
 
                 LocalDate fechas[] = {LocalDate.parse("2016-08-16"), LocalDate.parse("2016-08-16"), LocalDate.parse("2016-08-16"),
-                     LocalDate.parse("2016-08-16"), LocalDate.parse("2016-08-16"), LocalDate.parse("2016-08-16"),
+                    LocalDate.parse("2016-08-16"), LocalDate.parse("2016-08-16"), LocalDate.parse("2016-08-16"),
                     LocalDate.parse("2016-08-16"), LocalDate.parse("2016-08-16"), LocalDate.parse("2016-08-16")};
 
                 //Limpiamos los ArrayLists por si acaso
@@ -83,26 +82,23 @@ public class GestionAlumnos {
 
                 //Rellenamos el ArrayList con asignaturas por defecto           
                 for (int i = 0; i < nombres.length; i++) { //recorro los arrays
-                    Alumno alumno = new Alumno(nombres[i], apellidos[i], dnis[i], fechas[i], asignaturaAux.asignaturas, notaAux.notas); //creo la persona
+                    Alumno alumno = new Alumno(nombres[i], apellidos[i], dnis[i], fechas[i], GUI.asignaturaAux.asignaturas, GUI.notaAux.notasCargadas); //creo la persona
                     System.out.println("Añadido el alumno: " + nombres[i] + " Con dni: " + dnis[i]);
-                    //Escribo la asignatura en el fichero.
-                    escribirAlumno(alumno);
                     //Guardamos las asignatura en memoria
                     alumnos.add(alumno);
                 }
 
+                escribirAlumno(alumnos);
+
                 //Si el fichero existe en un primer lugar, pasamos a leerlo.    
             } else {
                 System.out.println("El fichero  Alumnos ya existe, cargándolo");
-                try {
-                    leerAlumnos();
-                } catch (IOException | ClassNotFoundException e) {
-                    System.out.println("Error en leerNotas() " + e);
-                }
+
+                leerAlumnos();
             }
         } else {
             System.out.println("No se pueden generar los alumnos porque faltas las asignaturas, generandolas ahora mismo...");
-            asignaturaAux.generarAsignaturas();
+            GUI.asignaturaAux.generarAsignaturas();
         }
     }
 
@@ -111,36 +107,33 @@ public class GestionAlumnos {
     * existe y limpia las arrays para rellenarlas con
     * los datos del archivo Asignaturas.
      */
-    public void leerAlumnos() throws IOException, ClassNotFoundException {
+    public void leerAlumnos() {
         //Limpiamos los ArrayLists por si acaso
         limpiarArrays();
 
         //Si el fichero existe
         if (Files.exists(Path.of("Alumnos.dat"))) {
-            //Declaramos el fichero
-            File fichero = new File("Alumnos.dat");
-
-            //Cargamos en memoria los datosdel fichero
-            ObjectInputStream dataIS;
-            dataIS = new ObjectInputStream(new FileInputStream(fichero));
-
-            System.out.println("LEYENDO ARCHIVO DE ALUMNOS");
-
-            //Lectura del fichero
             try {
-                while (true) {
-                    // Creamos un objeto asignatura leyendo del fichero 
-                    Alumno alumno = (Alumno) dataIS.readObject();
-                    System.out.printf("Nombre: " + alumno.getNombre() + "\nDNI: " + alumno.getDni());
-                    alumnos.add(alumno);
-                }
-            } catch (EOFException eo) {
-                System.out.println("FIN DE LECTURA.");
-                System.out.println(alumnos.toString());
-            } catch (StreamCorruptedException x) {
-                System.out.println("Error en StreamCorruptedException" + x);
+                //Declaramos el fichero
+                File fichero = new File("Alumnos.dat");
+
+                //Cargamos en memoria los datosdel fichero
+                ObjectInputStream dataIS;
+                dataIS = new ObjectInputStream(new FileInputStream(fichero));
+
+                System.out.println("LEYENDO ARCHIVO DE ALUMNOS");
+
+                //Lectura del fichero
+
+                alumnos = (ArrayList) dataIS.readObject();
+
+                dataIS.close(); // cerrar stream de entrada
+            } catch (EOFException e) {
+                System.out.println("(leerAsignaturas) FIN LECTURA ARCHIVO");
+            } catch (Exception e2) {
+                System.out.println("error:" + e2);
+                e2.printStackTrace();
             }
-            dataIS.close(); // cerrar stream de entrada
         } else {
             System.out.println("El fichero Alumnos.dat no existe, creandolo desde la plantilla...");
             generarAlumnos();
@@ -149,26 +142,17 @@ public class GestionAlumnos {
 
     public boolean añadirAlumno(String nombre, String apellidos, String dni, LocalDate fechaNac, ArrayList<Asignatura> listaAsignaturas, ArrayList<Notas> notasAlumno) {
         boolean finished = false;
-        
+
         Utils util = new Utils();
-        
-        if(util.comprobarDNI(dni) == true) {
-            
+
+        if (util.comprobarDNI(dni) == true) {
+
             Alumno alumno = new Alumno(nombre, apellidos, dni, fechaNac, listaAsignaturas, notasAlumno);
             alumnos.add(alumno);
             if (Files.exists(Path.of("Alumnos.dat"))) {
-                File fichero = new File("Alumnos.dat");
-                fichero.delete();
-                try {
-                    fichero.createNewFile();
-                } catch (IOException ex) {
-                    Logger.getLogger(GestionAsignaturas.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                for (int i = 0; i < alumnos.size(); i++) {
-                    escribirAlumno(alumnos.get(i));
-                }
-               finished = true;
-                System.out.println("El alumno ha sido añadido a la memoria y el fichero.");
+                escribirAlumno(alumnos);
+                finished = true;
+                System.out.println("El alumno ha sido añadido a la memoria y al fichero.");
             } else {
                 System.out.println("El fichero alumnos no exsiste, no se ha podido añadir el alumno");
                 return finished;
@@ -177,22 +161,22 @@ public class GestionAlumnos {
             System.out.println("El DNI no exsiste, no se ha podido añadir el usuario");
             return finished;
         }
-       return finished;
-        
+        return finished;
+
     }
 
-    public void escribirAlumno(Alumno alumno) {
+    public void escribirAlumno(ArrayList lista) {
         if (Files.exists(Path.of("Alumnos.dat"))) {
             try {
                 File fichero = new File("Alumnos.dat"); //declara el fichero
-                FileOutputStream fileout = new FileOutputStream(fichero, true);
+                FileOutputStream fileout = new FileOutputStream(fichero);
                 //crea el flujo de salida
                 //conecta el flujo de bytes al flujo de datos
                 ObjectOutputStream dataOS;
                 try {
                     dataOS = new ObjectOutputStream(fileout);
 
-                    dataOS.writeObject(alumno); //escribo la persona en el fichero
+                    dataOS.writeObject(lista); //escribo la persona en el fichero
                     dataOS.close();
                 } catch (IOException e) {
                     System.out.println("IOException " + e);

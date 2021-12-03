@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class Notas implements Serializable{
     
     Asignatura asignatura;
-    int notas[];
+    int[] notasGrupo;
     int convocatoria;
     
     //Constructor vacio
@@ -22,7 +22,7 @@ public class Notas implements Serializable{
 
     public Notas(Asignatura asignatura, int notas[], int convocatoria) {
         this.asignatura = asignatura;
-        this.notas = notas;
+        this.notasGrupo = notas;
         this.convocatoria = convocatoria;
     }
 
@@ -35,11 +35,11 @@ public class Notas implements Serializable{
     }
 
     public int[] getNotas() {
-        return notas;
+        return notasGrupo;
     }
 
     public void setNotas(int notas[]) {
-        this.notas = notas;
+        this.notasGrupo = notas;
     }
 
     public int getConvocatoria() {

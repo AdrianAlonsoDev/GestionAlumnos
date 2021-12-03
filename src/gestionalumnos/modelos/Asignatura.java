@@ -47,7 +47,7 @@ public class Asignatura implements Serializable{
 
     @Override
     public String toString() {
-        return "\nAsignatura:" + nombre + " Curso:" + curso;
+        return "\nAsignatura:" + nombre + " Curso:" + curso.getNombre();
     }
     
     
