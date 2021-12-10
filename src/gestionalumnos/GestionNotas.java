@@ -76,7 +76,7 @@ public class GestionNotas {
                  */
                 for (int i = 0; i < GUI.asignaturaAux.asignaturas.size(); i++) {
                     int convocatoriaRandom = ThreadLocalRandom.current().nextInt(2017, 2022);
-                    Notas nota = new Notas(GUI.asignaturaAux.asignaturas.get(i), notasLista, convocatoriaRandom);
+                    Notas nota = new Notas(GUI.asignaturaAux.asignaturas.get(i), "4,6,8,9", convocatoriaRandom);
                     notasCargadas.add(nota);
                     System.out.println("Añadido la nota de: " + notasCargadas.get(i).getAsignatura(true));
 

@@ -14,13 +14,13 @@ import java.io.Serializable;
 public class Notas implements Serializable{
     
     Asignatura asignatura;
-    int[] notasGrupo;
+    String notasGrupo;
     int convocatoria;
     
     //Constructor vacio
     public Notas(){}
 
-    public Notas(Asignatura asignatura, int notas[], int convocatoria) {
+    public Notas(Asignatura asignatura, String notas, int convocatoria) {
         this.asignatura = asignatura;
         this.notasGrupo = notas;
         this.convocatoria = convocatoria;
@@ -38,11 +38,12 @@ public class Notas implements Serializable{
         this.asignatura = asignatura;
     }
 
-    public int[] getNotas() {
+    public String getNotas() {
         return notasGrupo;
     }
+   
 
-    public void setNotas(int notas[]) {
+    public void setNotas(String notas) {
         this.notasGrupo = notas;
     }
 

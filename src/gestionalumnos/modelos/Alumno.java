@@ -60,8 +60,8 @@ public class Alumno implements Serializable {
         this.apellidos = apellidos;
     }
 
-    public LocalDate getFechaNacimiento() {
-        return fechaNac;
+    public String getFechaNacimiento() {
+        return fechaNac.toString();
     }
 
     public void setFechaNacimiento(LocalDate fechaNac) {
