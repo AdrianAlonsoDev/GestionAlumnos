@@ -41,12 +41,13 @@ public class GestionAlumnos {
     public static ArrayList<Alumno> alumnos = new ArrayList<>();
 
 
-    /* @generarAsignaturas
-    * Plantilla de asignaturas y cursos.
+    /* @generarAlumnos
+    * Plantilla de alumnos.
     * Se ejecuta cuando se abre por primera vez el
-    * programa o cuando el archivo Asignaturas.dat es eliminado.
+    * programa o cuando el archivo Alumnos.dat es eliminado.
      */
     public void generarAlumnos() {
+        System.out.println("\n GRABO LOS DATOS DE LOS ALUMNOS.");
         //Comprobamos antes de generar alumnos quelas asignaturas exsisten.   
         if (Files.exists(Path.of("Asignaturas.dat"))) {
 
@@ -78,8 +79,7 @@ public class GestionAlumnos {
                 /*
                  * Populamos los ArrayLists
                  */
-                System.out.println("GRABO LOS DATOS DE LOS ALUMNOS.");
-
+                
                 //Rellenamos el ArrayList con asignaturas por defecto           
                 for (int i = 0; i < nombres.length; i++) { //recorro los arrays
                     Alumno alumno = new Alumno(nombres[i], apellidos[i], dnis[i], fechas[i], GUI.asignaturaAux.asignaturas, GUI.notaAux.notasCargadas); //creo la persona
@@ -102,12 +102,14 @@ public class GestionAlumnos {
         }
     }
 
-    /* @leerAsignaturas
-    * Se Ejecuta cuando el fichero Asignaturas.dat
+    /* @leerAlumnos
+    * Se Ejecuta cuando el fichero Alumnos.dat
     * existe y limpia las arrays para rellenarlas con
-    * los datos del archivo Asignaturas.
+    * los datos del archivo.
      */
     public void leerAlumnos() {
+        System.out.println("\n LEYENDO ARCHIVO DE ALUMNOS");
+
         //Limpiamos los ArrayLists por si acaso
         limpiarArrays();
 
@@ -121,11 +123,12 @@ public class GestionAlumnos {
                 ObjectInputStream dataIS;
                 dataIS = new ObjectInputStream(new FileInputStream(fichero));
 
-                System.out.println("LEYENDO ARCHIVO DE ALUMNOS");
-
                 //Lectura del fichero
 
                 alumnos = (ArrayList) dataIS.readObject();
+                for (int i = 0; i < alumnos.size(); i++) {
+                    System.out.println("Leido el alumno: " + alumnos.get(i).toString());
+                }
 
                 dataIS.close(); // cerrar stream de entrada
             } catch (EOFException e) {
@@ -177,6 +180,7 @@ public class GestionAlumnos {
                     dataOS = new ObjectOutputStream(fileout);
 
                     dataOS.writeObject(lista); //escribo la persona en el fichero
+                    System.out.println("Escrito la lista de Alumnos en el fichero");
                     dataOS.close();
                 } catch (IOException e) {
                     System.out.println("IOException " + e);

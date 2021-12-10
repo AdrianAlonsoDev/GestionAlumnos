@@ -29,6 +29,10 @@ public class Notas implements Serializable{
     public Asignatura getAsignatura() {
         return asignatura;
     }
+    
+    public String getAsignatura(Boolean pideNombre) {
+        return asignatura.getNombre();
+    }
 
     public void setAsignatura(Asignatura asignatura) {
         this.asignatura = asignatura;

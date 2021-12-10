@@ -45,9 +45,12 @@ public class GestionNotas {
     * programa o cuando el archivo Asignaturas.dat es eliminado.
      */
     public void generarNotas() {
+        
         // Si el fichero no existe lo creamos   
         if (Files.exists(Path.of("Asignaturas.dat"))) {
             if (!Files.exists(Path.of("Notas.dat"))) {
+                System.out.println("\nGRABO LOS DATOS DE LAS NOTAS.");
+
                 File fichero = new File("Notas.dat");
 
                 System.out.println("(generarNotas) Notas.dat no existe");
@@ -71,11 +74,12 @@ public class GestionNotas {
                 /*
                  * Populamos los ArrayLists
                  */
-                System.out.println("GRABO LOS DATOS DE LAS NOTAS.");
-
                 for (int i = 0; i < GUI.asignaturaAux.asignaturas.size(); i++) {
                     int convocatoriaRandom = ThreadLocalRandom.current().nextInt(2017, 2022);
                     Notas nota = new Notas(GUI.asignaturaAux.asignaturas.get(i), notasLista, convocatoriaRandom);
+                    notasCargadas.add(nota);
+                    System.out.println("Añadido la nota de: " + notasCargadas.get(i).getAsignatura(true));
+
                 }
 
                     escribirNota(notasCargadas);
@@ -89,21 +93,23 @@ public class GestionNotas {
             GUI.asignaturaAux.generarAsignaturas();
         }
     }
-        /* @leerAsignaturas
-    * Se Ejecuta cuando el fichero Asignaturas.dat
+    
+   /* @leerNotas
+    * Se Ejecuta cuando el fichero Notas.dat
     * existe y limpia las arrays para rellenarlas con
-    * los datos del archivo Asignaturas.
-         */
+    * los datos del archivo.
+    */
     public void leerNotas() {
+        
+        System.out.println("\n LEYENDO ARCHIVO DE NOTAS");
+
         //Limpiamos los ArrayLists por si acaso
         limpiarArrays();
 
         //Si el fichero existe
         if (Files.exists(Path.of("Notas.dat"))) {
-
-            //Cargamos en memoria los datosdel fichero
-            System.out.println("(leerNotas) LEYENDO ARCHIVO DE NOTAS");
-
+                        
+            //Cargamos en memoria los datosdel fichero            
             try {
                 ObjectInputStream ois = new ObjectInputStream(
                         new FileInputStream("Notas.dat"));
@@ -114,11 +120,12 @@ public class GestionNotas {
                 // Mientras haya objetos
                 ois.close();
                 // cerrar stream de entrada
-
-                System.out.println(notasCargadas.toString());
-                System.out.println("(leerAsignaturas) Fichero Notas.dat cerrado ");
+                for (int i = 0; i < notasCargadas.size(); i++) {
+                    System.out.println("Leyendo notas de: " + notasCargadas.get(i).getAsignatura(true));
+                }
+                System.out.println("(leerNotas) Fichero Notas.dat cerrado ");
             } catch (EOFException e) {
-                System.out.println("(leerAsignaturas) FIN LECTURA ARCHIVO");
+                System.out.println("(leerNotas) FIN LECTURA ARCHIVO");
             } catch (Exception e2) {
                 System.out.println("error:" + e2);
                 e2.printStackTrace();
@@ -150,7 +157,7 @@ public class GestionNotas {
             try {
                 ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream("Notas.dat"));
                 objectOut.writeObject(lista);
-                System.out.println("(escribirNota) Escrito la lista de asignaturas: ");
+                System.out.println("(escribirNota) Escrito la lista de notas en el fichero.");
                 objectOut.close();
             } catch (Exception e) {
                 e.printStackTrace();

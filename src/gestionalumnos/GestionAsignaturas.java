@@ -5,6 +5,7 @@
  */
 package gestionalumnos;
 
+import static gestionalumnos.GestionNotas.notasCargadas;
 import gestionalumnos.modelos.Asignatura;
 import gestionalumnos.modelos.Curso;
 import java.io.EOFException;
@@ -42,9 +43,12 @@ public class GestionAsignaturas {
     * programa o cuando el archivo Asignaturas.dat es eliminado.
      */
     public void generarAsignaturas() {
+
         // Si el fichero no existe lo creamos   
         if (!Files.exists(Path.of("Asignaturas.dat"))) {
+            System.out.println("\n GRABO LOS DATOS DE LA ASIGNATURA Y CURSOS.");
             System.out.println("(generarAsignaturas) Asignaturas.dat no existe");
+            
             File fichero = new File("Asignaturas.dat");
 
             try {
@@ -67,7 +71,6 @@ public class GestionAsignaturas {
             /*
             * Populamos los ArrayLists
              */
-            System.out.println("(generarAsignaturas) GRABO LOS DATOS DE LA ASIGNATURA Y CURSOS.");
 
             //Rellenamos el ArrayList con cursos por defecto
             for (String cursosNombre1 : cursosNombre) {
@@ -80,6 +83,7 @@ public class GestionAsignaturas {
                 Asignatura asignatura = new Asignatura(nombres[i], cursos.get(i)); //creo la persona                
                 //Guardamos las asignatura en memoria
                 asignaturas.add(asignatura);
+                System.out.println("Asignatura añadida: " + asignaturas.get(i).getNombre());
             }
 
             escribirAsignatura(asignaturas);
@@ -103,7 +107,7 @@ public class GestionAsignaturas {
         if (Files.exists(Path.of("Asignaturas.dat"))) {
 
             //Cargamos en memoria los datosdel fichero
-            System.out.println("(leerAsignaturas) LEYENDO ARCHIVO DE ASIGNATURAS");
+            System.out.println("\nLEYENDO ARCHIVO DE ASIGNATURAS");
 
             try {
                 ObjectInputStream ois = new ObjectInputStream(
@@ -145,7 +149,7 @@ public class GestionAsignaturas {
             try {
                 ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream("Asignaturas.dat"));
                 objectOut.writeObject(lista);
-                System.out.println("(escribirAsignatura) Escrito la lista de asignaturas: ");
+                System.out.println("(escribirAsignatura) Escrito la lista de asignaturas en el fichero");
                 objectOut.close();
             } catch (Exception e) {
                 e.printStackTrace();
