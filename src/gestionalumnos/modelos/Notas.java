@@ -6,6 +6,7 @@
 package gestionalumnos.modelos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  *
@@ -14,16 +15,14 @@ import java.io.Serializable;
 public class Notas implements Serializable{
     
     Asignatura asignatura;
-    String notasGrupo;
-    int convocatoria;
+    ArrayList<Integer> notasGrupo;
     
     //Constructor vacio
     public Notas(){}
 
-    public Notas(Asignatura asignatura, String notas, int convocatoria) {
+    public Notas(Asignatura asignatura, ArrayList<Integer> notasGrupo) {
         this.asignatura = asignatura;
-        this.notasGrupo = notas;
-        this.convocatoria = convocatoria;
+        this.notasGrupo = notasGrupo;
     }
 
     public Asignatura getAsignatura() {
@@ -38,22 +37,17 @@ public class Notas implements Serializable{
         this.asignatura = asignatura;
     }
 
-    public String getNotas() {
+    public ArrayList<Integer> getNotas() {
         return notasGrupo;
+    }
+    
+    public String getNotas(boolean string) {
+        return notasGrupo.toString();
     }
    
 
-    public void setNotas(String notas) {
+    public void setNotas(ArrayList<Integer> notas) {
         this.notasGrupo = notas;
     }
-
-    public int getConvocatoria() {
-        return convocatoria;
-    }
-
-    public void setConvocatoria(int convocatoria) {
-        this.convocatoria = convocatoria;
-    }
-    
     
 }
