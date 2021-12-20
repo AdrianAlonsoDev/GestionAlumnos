@@ -344,13 +344,13 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_ListAlumnosMouseReleased
 
     private void listaAsignaturasMatriculadasMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaAsignaturasMatriculadasMouseReleased
+        
         int seleccionAsig = this.listaAsignaturasMatriculadas.getSelectedIndex();
 
-        this.notasDe.setText("");
-        this.notasDe.setText(gestionAlumnos.alumnos.get(seleccion).getListaAsignaturas().get(seleccion).getNombre());
+        this.notasDe.setText(gestionAlumnos.alumnos.get(seleccion).getListaAsignaturas().get(seleccionAsig).getNombre());
         
-        this.listaNotas.setText("");
-        this.listaNotas.setText(gestionAlumnos.alumnos.get(seleccion).getNotasAlumno().get(seleccionAsig).getNotas());
+        this.listaNotas.setText(gestionAlumnos.alumnos.get(seleccionAsig).getNotasAlumno().get(seleccionAsig).getNotas(true));
+        
     }//GEN-LAST:event_listaAsignaturasMatriculadasMouseReleased
 
     public static  GestionAsignaturas asignaturaAux = new GestionAsignaturas();

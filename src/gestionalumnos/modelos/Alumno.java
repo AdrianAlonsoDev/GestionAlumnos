@@ -21,20 +21,20 @@ public class Alumno implements Serializable {
     private String dni;
     private LocalDate fechaNac;
     private ArrayList<Asignatura> listaAsignaturas;
-    private ArrayList<Notas> notasAlumno;
+    private ArrayList<NotasConvocatoria> notasConvocatoriaAlumno;
     
 
     //ConstructorsS
     public Alumno() {
     }
 
-    public Alumno(String nombre, String apellidos, String dni, LocalDate fechaNac, ArrayList<Asignatura> listaAsignaturas, ArrayList<Notas> notasAlumno) {
+    public Alumno(String nombre, String apellidos, String dni, LocalDate fechaNac, ArrayList<Asignatura> listaAsignaturas, ArrayList<NotasConvocatoria> notasConvocatoriaAlumno) {
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.dni = dni;
         this.fechaNac = fechaNac;
         this.listaAsignaturas = listaAsignaturas;
-        this.notasAlumno = notasAlumno;
+        this.notasConvocatoriaAlumno = notasConvocatoriaAlumno;
     }
 
     //Methods
@@ -89,12 +89,12 @@ public class Alumno implements Serializable {
         this.listaAsignaturas = listaAsignaturas;
     }    
 
-    public ArrayList<Notas> getNotasAlumno() {
-        return notasAlumno;
+    public ArrayList<NotasConvocatoria> getNotasAlumno() {
+        return notasConvocatoriaAlumno;
     }
 
-    public void setNotasAlumno(ArrayList<Notas> notasAlumno) {
-        this.notasAlumno = notasAlumno;
+    public void setNotasAlumno(ArrayList<NotasConvocatoria> notasAlumno) {
+        this.notasConvocatoriaAlumno = notasAlumno;
     }
 
     

@@ -9,6 +9,7 @@ import gestionalumnos.interfaz.GUI;
 import gestionalumnos.modelos.Asignatura;
 import gestionalumnos.modelos.Curso;
 import gestionalumnos.modelos.Notas;
+import gestionalumnos.modelos.NotasConvocatoria;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +26,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.ThreadLocalRandom;
+import gestionalumnos.modelos.Convocatoria;
 
 /**
  *
@@ -38,6 +40,7 @@ public class GestionNotas {
     //Arrays para almacenar en memoria las asignaturas y cursos
     //y mostrarlas en la interfaz, luego estas se almacenan en un fichero.
     public static ArrayList<Notas> notasCargadas = new ArrayList<>();
+    public static ArrayList<NotasConvocatoria> notasConvocatoria = new ArrayList<>();
 
     /* @generarAsignaturas
     * Plantilla de asignaturas y cursos.
@@ -65,10 +68,20 @@ public class GestionNotas {
 
                 Random rd = new Random();
 
-                int[] notasLista = new int[8];
+                ArrayList<Integer> notasLista = new ArrayList<>();
 
-                for (int i = 0; i < notasLista.length; i++) {
-                    notasLista[i] = rd.nextInt(11);
+                for (int i = 0; i < 5; i++) {
+                    notasLista.add(rd.nextInt(11));
+                }
+                
+                for (int i = 0; i < 3; i++) {
+                    Convocatoria convocatoria = new Convocatoria(i, notasLista);
+                    notasLista.add(rd.nextInt(11));
+                }
+                
+                
+                for (int i = 0; i < 3; i++) {
+                    notasConvocatoria.add(i, notasLista);
                 }
 
                 /*
@@ -76,7 +89,7 @@ public class GestionNotas {
                  */
                 for (int i = 0; i < GUI.asignaturaAux.asignaturas.size(); i++) {
                     int convocatoriaRandom = ThreadLocalRandom.current().nextInt(2017, 2022);
-                    Notas nota = new Notas(GUI.asignaturaAux.asignaturas.get(i), "4,6,8,9", convocatoriaRandom);
+                    Notas nota = new Notas(GUI.asignaturaAux.asignaturas.get(i), notasLista, convocatoriaRandom);
                     notasCargadas.add(nota);
                     System.out.println("Añadido la nota de: " + notasCargadas.get(i).getAsignatura(true));
 
